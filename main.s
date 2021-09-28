@@ -86,7 +86,8 @@ SysTick_Init
 WAIT1S
 	LDR	R2, =NVIC_ST_RELOAD_R		;	Load the reload register address
 	LDR	R3, =NVIC_ST_CURRENT_R		;	Load the reload register address
-	MOV R0, #16000000				; 	Prepare 16 million for 
+	MOV R0, #0xF424					; 	Prepare 16 million to be stored into the load register (needs to be shifted)
+	LSL	R0, #8						;	Shift the loaded value in R0 left by 2 bytes to make it equivalent to 16 million
 	MOV	R1, #0						;	Prepare 0 to be loaded into the current register
 	STR	R0, [R2]					; 	Store 16 million in the SysTick load register
 	STR	R1, [R3]					;	Set the SysTick Current register to 0
