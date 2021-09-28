@@ -1,7 +1,7 @@
 
 ;16s counter 
 ;main.s
-;Author : zhou zhou
+;Author : zhou zhou, Blane Cypurda
 ;Date: 05/09/2017
 ;Runs on TM4C1294 
 ;PJ0 as a set button
