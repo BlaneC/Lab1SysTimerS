@@ -25,9 +25,10 @@ NVIC_ST_RELOAD_R	EQU 0xE000E014
 NVIC_ST_CURRENT_R	EQU 0xE000E018
 
 SYSCTL_RCGCGPIO_R	EQU 0x400FE608
-        AREA    |.text|, CODE, READONLY, ALIGN=2
-        THUMB
-        EXPORT  main
+	
+	AREA    |.text|, CODE, READONLY, ALIGN=2
+	THUMB
+	EXPORT  __main
 			
 GPIO_Init
 	;enable clcok for both port
@@ -76,7 +77,7 @@ SysTick_Init
 	STR R4, [R2]					; 	Store 0xFFFFFF into the SysTick Load register
 	STR	R0, [R3]					; 	Store 0 into the SysTick Current register
 	
-	MOV	R2, #1						;	Prepare 1, to Enable the SysTick Timer
+	MOV	R2, #5						;	Prepare 1, to Enable the SysTick Timer
 	STR	R2, [R1]					;	Store 1 into the SysTick Control register, enabling it
 
 	BX	LR
@@ -84,20 +85,20 @@ SysTick_Init
 	
 	
 WAIT1S
-	LDR	R2, =NVIC_ST_RELOAD_R		;	Load the reload register address
-	LDR	R3, =NVIC_ST_CURRENT_R		;	Load the reload register address
-	MOV R0, #0xF424					; 	Prepare 16 million to be stored into the load register (needs to be shifted)
-	LSL	R0, #8						;	Shift the loaded value in R0 left by 2 bytes to make it equivalent to 16 million
-	MOV	R1, #0						;	Prepare 0 to be loaded into the current register
-	STR	R0, [R2]					; 	Store 16 million in the SysTick load register
-	STR	R1, [R3]					;	Set the SysTick Current register to 0
+	LDR	R6, =NVIC_ST_RELOAD_R		;	Load the reload register address
+	LDR	R7, =NVIC_ST_CURRENT_R		;	Load the reload register address
+	MOV R4, #0xF424					; 	Prepare 16 million to be stored into the load register (needs to be shifted)
+	LSL	R4, #8						;	Shift the loaded value in R0 left by 2 bytes to make it equivalent to 16 million
+	MOV	R5, #0						;	Prepare 0 to be loaded into the current register
+	STR	R4, [R6]					; 	Store 16 million in the SysTick load register
+	STR	R5, [R7]					;	Set the SysTick Current register to 0
+	;STR	R5, [R6]					; 	Write 0 to the RELOAD REGISTER to prevent reloading
 W_LOOP1
 	LDR R1,=NVIC_ST_CTRL_R
 	LDR R0,[R1]
 	AND R0,#0x00010000
 	CMP R0,#0x00
 	BEQ W_LOOP1
-	
 	BX	LR
 
 
@@ -112,7 +113,7 @@ LOOP_DELAY1
 	BX	LR	
 		
 	
-main
+__main
 	BL  	GPIO_Init
 	BL		SysTick_Init
 LOOP1
@@ -144,11 +145,11 @@ LOOP2
 	;BL		DELAY1
 	
 	ADD R2,	#1						; increment current value
-	CMP R2,	#0x0F					; check if it over 16
+	CMP R2,	#0x10					; check if it over 16
 	BNE 	LOOP2
 	
 	B 		LOOP1
 	
-		ALIGN
-		END
+	ALIGN
+	END
 		
